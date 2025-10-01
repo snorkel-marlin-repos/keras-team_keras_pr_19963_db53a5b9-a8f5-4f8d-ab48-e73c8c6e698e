@@ -344,12 +344,15 @@ class Embedding(Layer):
             outputs = ops.add(outputs, lora_outputs)
         return outputs
 
-    def quantize(self, mode, type_check=True):
+    def quantize(self, mode):
         import gc
 
         # Prevent quantization of the subclasses
-        if type_check and (type(self) is not Embedding):
-            raise self._quantize_not_implemented_error()
+        if type(self) is not Embedding:
+            raise NotImplementedError(
+                f"Layer {self.__class__.__name__} does not have a `quantize()` "
+                "method implemented."
+            )
         self._check_quantize_args(mode, self.compute_dtype)
 
         self._tracker.unlock()
