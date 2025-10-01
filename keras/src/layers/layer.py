@@ -1171,10 +1171,7 @@ class Layer(BackendLayer, Operation, KerasSaveable):
             layer._clear_losses()
 
     def quantize(self, mode):
-        raise self._quantize_not_implemented_error()
-
-    def _quantize_not_implemented_error(self):
-        return NotImplementedError(
+        raise NotImplementedError(
             f"Layer {self.__class__.__name__} does not have a `quantize()` "
             "method implemented."
         )

@@ -308,11 +308,8 @@ class EmbeddingTest(test_case.TestCase, parameterized.TestCase):
             pass
 
         layer = MyEmbedding(10, 16)
-        layer.build()
         with self.assertRaises(NotImplementedError):
             layer.quantize("int8")
-
-        layer.quantize("int8", type_check=False)  # No error
 
     def test_quantize_when_already_quantized(self):
         layer = layers.Embedding(10, 16)
@@ -323,6 +320,7 @@ class EmbeddingTest(test_case.TestCase, parameterized.TestCase):
         ):
             layer.quantize("int8")
 
+    def test_quantize_when_already_quantized_using_dtype_argument(self):
         layer = layers.Embedding(10, 16, dtype="int8_from_float32")
         layer.build()
         with self.assertRaisesRegex(

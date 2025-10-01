@@ -21,8 +21,7 @@ class PyDataset:
 
     Every `PyDataset` must implement the `__getitem__()` and the `__len__()`
     methods. If you want to modify your dataset between epochs,
-    you may additionally implement `on_epoch_end()`,
-    or `on_epoch_begin` to be called at the start of each epoch.
+    you may additionally implement `on_epoch_end()`.
     The `__getitem__()` method should return a complete batch
     (not a single sample), and the `__len__` method should return
     the number of batches in the dataset (rather than the number of samples).
@@ -171,10 +170,6 @@ class PyDataset:
             "@property\ndef num_batches(self):\n  return ..."
         )
 
-    def on_epoch_begin(self):
-        """Method called at the beginning of every epoch."""
-        pass
-
     def on_epoch_end(self):
         """Method called at the end of every epoch."""
         pass
@@ -303,9 +298,6 @@ class PyDatasetAdapter(DataAdapter):
 
     def get_torch_dataloader(self):
         return data_adapter_utils.get_torch_dataloader(self._get_iterator())
-
-    def on_epoch_begin(self):
-        self.py_dataset.on_epoch_begin()
 
     def on_epoch_end(self):
         if self.enqueuer:
@@ -566,11 +558,8 @@ class OrderedEnqueuer(PyDatasetEnqueuer):
                         # We're done
                         return
 
-                # Call the internal on epoch end and epoch begin.
+                # Call the internal on epoch end.
                 self.py_dataset.on_epoch_end()
-                # The first on_epoch_begin call was already made,
-                # prior to the start of the Enqueuer.
-                self.py_dataset.on_epoch_begin()
                 self._send_py_dataset()  # Update the pool
         except Exception as e:
             self.queue.put(e)  # Report exception
